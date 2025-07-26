@@ -1,0 +1,70 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    ports:
+       - 27017:27017
+
+  medical-services:
+    build:
+      context: .
+      dockerfile: src/microservices/MedicalServicesMicroservice/Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 44326:80
+
+  appointments:
+    build:
+      context: .
+      dockerfile: src/microservices/AppointmentMicroservice/Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 44388:80
+
+  patient-identity:
+    build:
+      context: .
+      dockerfile: src/microservices/PatientIdentityMicroservice/Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 44397:80
+
+  frontendgw:
+    build:
+      context: .
+      dockerfile: src/gateways/FrontendGateway/Dockerfile
+    depends_on:
+      - mongo
+      - catalog
+      - cart
+      - identity
+    ports:
+      - 44300:80
+
+  backendgw:
+    build:
+      context: .
+      dockerfile: src/gateways/BackendGateway/Dockerfile
+    depends_on:
+      - mongo
+      - catalog
+      - identity
+    ports:
+      - 44359:80
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/uis/Frontend/Dockerfile
+    ports:
+      - 44317:80
+
+  backend:
+    build:
+      context: .
+      dockerfile: src/uis/Backend/Dockerfile
+    ports:
+      - 44301:80
